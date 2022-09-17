@@ -21,6 +21,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
  */
 public class Robot extends TimedRobot {
 
+// TODO: add "now" using getFPGATimestamp() and "cycles" counting periodic cycles
+// TODO: update these values    
+
 public static ShuffleboardTab drivetrainTab;
 
 // TODO: review change
