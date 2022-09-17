@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
  */
 public class Robot extends TimedRobot {
 
-// TODO: add "now" using getFPGATimestamp() and "cycles" counting periodic cycles
+// TODO: add "now" using Timer.getFPGATimestamp() and "cycles" counting periodic cycles
 // TODO: update these values    
 
 public static ShuffleboardTab drivetrainTab;
@@ -86,14 +86,14 @@ Translation2d[] moduleOffset; // = new Translation2d[4];
   public void teleopPeriodic() {
 
     //TODO: Implement control of chassis
-    // get 3-axis data, grab the MMJoystickAxis class
+    // get 3-axis data, using the MMJoystickAxis class
     //   from live code to allow scaling and deadzone
     // construct a SwerveDriveKinematics object
     // construct a ChassisSpeeds object
     // get SwerveDriveStatus objects
     // set SwerveModule values
     // add Optimization (so wheels don't turn more than needed)
-    // add desaturation
+    // add desaturation (so that no wheel exceeds full throttle)
 
   }
 
