@@ -24,26 +24,20 @@ public class Robot extends TimedRobot {
 
 public static ShuffleboardTab drivetrainTab;
 
-// TODO: review change
-SwerveModule[] swerveModules; // = new SwerveModule[4]; 
-Translation2d[] moduleOffset; // = new Translation2d[4]; 
+SwerveModule[] swerveModules;
+Translation2d[] moduleOffset;
+
+
 // TODO: update these values 
 public static long cycle = 0;
 public static double now = 0;
 
 // TODO: Add Navx (for field oriented driving)
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
   @Override
   public void robotInit() {
-    // TODO: Review 
     drivetrainTab = Shuffleboard.getTab("Drivetrain");
 
-    // TODO: Update translations of each swerve module
-    // first entry is an example, add the rest
     moduleOffset = new Translation2d[]{
       new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS/2.0,
       Constants.DRIVETRAIN_TRACKWIDTH_METERS/2.0),
@@ -53,12 +47,8 @@ public static double now = 0;
       -Constants.DRIVETRAIN_TRACKWIDTH_METERS/2.0),
       new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS/2.0,
       Constants.DRIVETRAIN_TRACKWIDTH_METERS/2.0)
-      
-
     };
 
-    // TODO: create Swerve Modules 
-    // the first module is a sample, review and add others
     swerveModules = new SwerveModule[] {
       // Mk4i is the module type
       // createFalcon500 means that we have two Falcons on the module
@@ -105,12 +95,7 @@ public static double now = 0;
               Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
               Constants.BACK_LEFT_MODULE_STEER_MOTOR,
               Constants.BACK_LEFT_MODULE_STEER_ENCODER,
-              Constants.BACK_LEFT_MODULE_STEER_OFFSET),
-
-          
-          
-
-        
+              Constants.BACK_LEFT_MODULE_STEER_OFFSET)
     };
 
         
