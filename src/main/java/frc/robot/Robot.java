@@ -20,15 +20,16 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
  * project.
  */
 public class Robot extends TimedRobot {
-
-// TODO: add "now" using Timer.getFPGATimestamp() and "cycles" counting periodic cycles
-// TODO: update these values    
+   
 
 public static ShuffleboardTab drivetrainTab;
 
 // TODO: review change
 SwerveModule[] swerveModules; // = new SwerveModule[4]; 
 Translation2d[] moduleOffset; // = new Translation2d[4]; 
+// TODO: update these values 
+public static long cycle = 0;
+public static double now = 0;
 
 // TODO: Add Navx (for field oriented driving)
 
@@ -45,7 +46,15 @@ Translation2d[] moduleOffset; // = new Translation2d[4];
     // first entry is an example, add the rest
     moduleOffset = new Translation2d[]{
       new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS/2.0,
+      Constants.DRIVETRAIN_TRACKWIDTH_METERS/2.0),
+      new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS/2.0,
+      -Constants.DRIVETRAIN_TRACKWIDTH_METERS/2.0),
+      new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS/2.0,
+      -Constants.DRIVETRAIN_TRACKWIDTH_METERS/2.0),
+      new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS/2.0,
       Constants.DRIVETRAIN_TRACKWIDTH_METERS/2.0)
+      
+
     };
 
     // TODO: create Swerve Modules 
@@ -62,12 +71,49 @@ Translation2d[] moduleOffset; // = new Translation2d[4];
         drivetrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
                 .withSize(2, 4)
                 .withPosition(0, 0),
-        Mk4iSwerveModuleHelper.GearRatio.L1,
+        Mk4iSwerveModuleHelper.GearRatio.L2,
         Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR,
         Constants.FRONT_LEFT_MODULE_STEER_MOTOR,
         Constants.FRONT_LEFT_MODULE_STEER_ENCODER,
         Constants.FRONT_LEFT_MODULE_STEER_OFFSET),
+
+        Mk4iSwerveModuleHelper.createFalcon500(
+          drivetrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+                  .withSize(2, 4)
+                  .withPosition(3, 0),
+          Mk4iSwerveModuleHelper.GearRatio.L2,
+          Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
+          Constants.FRONT_RIGHT_MODULE_STEER_MOTOR,
+          Constants.FRONT_RIGHT_MODULE_STEER_ENCODER,
+          Constants.FRONT_RIGHT_MODULE_STEER_OFFSET),
+
+          Mk4iSwerveModuleHelper.createFalcon500(
+            drivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+                    .withSize(2, 4)
+                    .withPosition(3, 5),
+            Mk4iSwerveModuleHelper.GearRatio.L2,
+            Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR,
+            Constants.BACK_RIGHT_MODULE_STEER_MOTOR,
+            Constants.BACK_RIGHT_MODULE_STEER_ENCODER,
+            Constants.BACK_RIGHT_MODULE_STEER_OFFSET),
+
+          Mk4iSwerveModuleHelper.createFalcon500(
+              drivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+                      .withSize(2, 4)
+                      .withPosition(0, 5),
+              Mk4iSwerveModuleHelper.GearRatio.L2,
+              Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
+              Constants.BACK_LEFT_MODULE_STEER_MOTOR,
+              Constants.BACK_LEFT_MODULE_STEER_ENCODER,
+              Constants.BACK_LEFT_MODULE_STEER_OFFSET),
+
+          
+          
+
+        
     };
+
+        
   }
 
   @Override

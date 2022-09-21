@@ -7,8 +7,8 @@ package frc.robot;
 /** Add your docs here. */
 public class Constants {
     // TODO: review constants and update for our values
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.2794;
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.2794;
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.31115;
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.31115;
 
     // TODO: This relates to where we use the Navx
     public static final int DRIVETRAIN_PIGEON_ID = 0;
