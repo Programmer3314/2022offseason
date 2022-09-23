@@ -12,4 +12,3 @@ public class MMConstants {
     public static final double kMMNeoTicksPerRev = 42;
     public static final int kMMTimeoutMs = 30;
 }
-

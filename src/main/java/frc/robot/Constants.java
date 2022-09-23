@@ -6,6 +6,7 @@ package frc.robot;
 
 
 public class Constants {
+    // TODO: expand to (lengthInInches-2*WheelOffset)*39.37 
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.48895;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.48895;
 
@@ -34,7 +35,7 @@ public class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0);
 
     public static final double MAX_VOLTAGE = 12.0;
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.14528;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.14528; // With the L2... 4.96824
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
         Math.hypot(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0);
 

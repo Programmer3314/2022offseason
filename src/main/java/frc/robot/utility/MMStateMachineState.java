@@ -10,9 +10,12 @@ public abstract class MMStateMachineState {
     public MMStateMachineState(String name) {
         this.name = name;
     }
+
     public abstract MMStateMachineState calcNextState();
+
     public abstract void transitionTo(MMStateMachineState previousState);
+
     public abstract void transistionFrom(MMStateMachineState nextState);
+
     public abstract void doState();
 }
-

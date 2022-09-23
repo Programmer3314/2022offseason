@@ -22,16 +22,16 @@ public class MMStateMachine {
     }
 
     public MMStateMachine update() {
-        secondsInState=Robot.now-stateStartSeconds;
-        cyclesInState=Robot.cycle-stateStartCycles;
+        secondsInState = Robot.now - stateStartSeconds;
+        cyclesInState = Robot.cycle - stateStartCycles;
         if (!firstUpdate) {
             MMStateMachineState nextState = currentState.calcNextState();
             if (currentState != nextState) {
                 currentState.transistionFrom(nextState);
                 stateStartCycles = Robot.cycle;
                 stateStartSeconds = Robot.now;
-                secondsInState=0;
-                cyclesInState=0;
+                secondsInState = 0;
+                cyclesInState = 0;
                 nextState.transitionTo(currentState);
                 currentState = nextState;
             }

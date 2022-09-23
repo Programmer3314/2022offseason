@@ -23,20 +23,21 @@ public class MMJoystickAxis {
     public double get() {
         double rawAxis = joystick.getRawAxis(axis);
 
-        return getDeadzone(rawAxis)*scale;
+        return getDeadzone(rawAxis) * scale;
     }
-    public double getSquared(){
+
+    public double getSquared() {
         double rawAxis = joystick.getRawAxis(axis);
         double gotGet = getDeadzone(rawAxis);
-        if(gotGet>=0){
-            gotGet*=gotGet;
+        if (gotGet >= 0) {
+            gotGet *= gotGet;
+        } else {
+            gotGet *= -gotGet;
         }
-        else{
-            gotGet*=-gotGet;
-        }
-        return gotGet*scale;
+        return gotGet * scale;
     }
-    public double getDeadzone(double rawAxis){
+
+    public double getDeadzone(double rawAxis) {
         double result;
 
         if (deadzone <= Math.abs(rawAxis)) {
