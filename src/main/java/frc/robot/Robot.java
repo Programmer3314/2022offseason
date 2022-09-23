@@ -137,6 +137,7 @@ public static double now = 0;
     // set SwerveModule values
     // add Optimization (so wheels don't turn more than needed)
     // add desaturation (so that no wheel exceeds full throttle)
+    //   SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
     ChassisSpeeds chassisSpeeds= new ChassisSpeeds(chassisX.get(), chassisY.get(), chassisR.get());
     SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
