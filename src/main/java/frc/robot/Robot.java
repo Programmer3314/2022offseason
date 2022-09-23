@@ -4,14 +4,22 @@
 
 package frc.robot;
 
+import java.io.Console;
+
+import com.swervedrivespecialties.swervelib.DriveController;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.utility.MMJoystickAxis;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,7 +28,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
  * project.
  */
 public class Robot extends TimedRobot {
-   
+   public static MMJoystickAxis chassisX;
+   public static MMJoystickAxis chassisY;
+   public static MMJoystickAxis chassisR;
 
 public static ShuffleboardTab drivetrainTab;
 
@@ -97,7 +107,9 @@ public static double now = 0;
               Constants.BACK_LEFT_MODULE_STEER_ENCODER,
               Constants.BACK_LEFT_MODULE_STEER_OFFSET)
     };
-
+    MMJoystickAxis chassisX = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1, -Constants.MAX_VELOCITY_METERS_PER_SECOND);
+    MMJoystickAxis chassisY = new MMJoystickAxis(Constants.DriverController, Constants.ChassisYAxis, .1, -Constants.MAX_VELOCITY_METERS_PER_SECOND);
+    MMJoystickAxis chassisR = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1, -Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
         
   }
 
@@ -126,6 +138,13 @@ public static double now = 0;
     // add Optimization (so wheels don't turn more than needed)
     // add desaturation (so that no wheel exceeds full throttle)
 
+    ChassisSpeeds chassisSpeeds= new ChassisSpeeds(chassisX.get(), chassisY.get(), chassisR.get());
+    SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
+    SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+    for(int i =0; i<4; i++){
+      SwerveModuleState.optimize(swerveModuleState[i], new Rotation2d(swerveModules[i].getSteerAngle()));
+      swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond/Constants.MAX_VELOCITY_METERS_PER_SECOND)*Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+    }
   }
 
   @Override
