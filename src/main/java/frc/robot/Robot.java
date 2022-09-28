@@ -108,12 +108,11 @@ public class Robot extends TimedRobot {
             Constants.BACK_LEFT_MODULE_STEER_OFFSET)
     };
 
-    // TODO: !!!!!! Fix these initializations. Why do they show as not used???
-    MMJoystickAxis chassisX = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1,
+    chassisX = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1,
         -Constants.MAX_VELOCITY_METERS_PER_SECOND);
-    MMJoystickAxis chassisY = new MMJoystickAxis(Constants.DriverController, Constants.ChassisYAxis, .1,
+    chassisY = new MMJoystickAxis(Constants.DriverController, Constants.ChassisYAxis, .1,
         -Constants.MAX_VELOCITY_METERS_PER_SECOND);
-    MMJoystickAxis chassisR = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1,
+    chassisR = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1,
         -Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 
   }
@@ -155,12 +154,12 @@ public class Robot extends TimedRobot {
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(), chassisY.get(), chassisR.get());
     SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
     SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-    // TODO: replace the "4" below with something generic
-    for (int i = 0; i < 4; i++) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,Constants.MAX_VELOCITY_METERS_PER_SECOND);
+    for (int i = 0; i < moduleOffset.length; i++) {
       SwerveModuleState.optimize(swerveModuleState[i], new Rotation2d(swerveModules[i].getSteerAngle()));
       // Comment the following line for calibration...
-      swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond / Constants.MAX_VELOCITY_METERS_PER_SECOND)
-          * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+      // swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond / Constants.MAX_VELOCITY_METERS_PER_SECOND)
+          // * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
     }
   }
 

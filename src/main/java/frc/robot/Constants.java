@@ -6,9 +6,13 @@ package frc.robot;
 
 
 public class Constants {
-    // TODO: expand to (lengthInInches-2*WheelOffset)*39.37 
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.48895;
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.48895;
+    public static final double CHASSIS_LENGTH_IN_INCHES = 24.5;
+    public static final double CHASSIS_WIDTH_IN_INCHES =24.5;
+
+    public static final double WHEEL_OFFSET_IN_INCHES = 2.625;
+
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = .0254*(CHASSIS_WIDTH_IN_INCHES-(WHEEL_OFFSET_IN_INCHES*2));
+    public static final double DRIVETRAIN_WHEELBASE_METERS = .0254*(CHASSIS_LENGTH_IN_INCHES-(WHEEL_OFFSET_IN_INCHES*2));
 
     // TODO: This relates to where we use the Navx
     public static final int DRIVETRAIN_PIGEON_ID = 0;
