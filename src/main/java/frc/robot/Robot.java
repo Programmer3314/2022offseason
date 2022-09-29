@@ -136,21 +136,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    // TODO: Implement control of chassis
-    // doneish-get 3-axis data, using the MMJoystickAxis class
-    //           from live code to allow scaling and deadzone
-    // done-construct a SwerveDriveKinematics object
-    // done-construct a ChassisSpeeds object
-    // done-get SwerveDriveStatus objects
-    // done-set SwerveModule values
-    // done-add Optimization (so wheels don't turn more than needed)
-    // add desaturation (so that no wheel exceeds full throttle)    
-    //  I found the following call in some sample code from SDS...
-    //      SwerveDriveKinematics.normalizeWheelSpeeds(states,
-    //          MAX_VELOCITY_METERS_PER_SECOND);
-    //  but it throws an error. I thought it had been depricated. 
-    //  The true call is SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,Constants.MAX_VELOCITY_METERS_PER_SECOND);
-
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(), chassisY.get(), chassisR.get());
     SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
     SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
@@ -159,7 +144,7 @@ public class Robot extends TimedRobot {
       SwerveModuleState.optimize(swerveModuleState[i], new Rotation2d(swerveModules[i].getSteerAngle()));
       // Comment the following line for calibration...
       // swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond / Constants.MAX_VELOCITY_METERS_PER_SECOND)
-          // * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+      //     * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
     }
   }
 

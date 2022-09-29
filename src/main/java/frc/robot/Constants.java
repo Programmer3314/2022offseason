@@ -14,7 +14,7 @@ public class Constants {
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = .0254*(CHASSIS_WIDTH_IN_INCHES-(WHEEL_OFFSET_IN_INCHES*2));
     public static final double DRIVETRAIN_WHEELBASE_METERS = .0254*(CHASSIS_LENGTH_IN_INCHES-(WHEEL_OFFSET_IN_INCHES*2));
 
-    // TODO: This relates to where we use the Navx
+    // TODO: This is for Pigeon IMU we use the Navx
     public static final int DRIVETRAIN_PIGEON_ID = 0;
 
     // TODO: review constants and update for our values
@@ -43,6 +43,7 @@ public class Constants {
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
         Math.hypot(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
+    // TODO: make ChassisR consistant with ChassisX&Y    
     public static final int ChassisXAxis = 1;
     public static final int ChassisYAxis = 0;
     public static final int ChassisR =4;
