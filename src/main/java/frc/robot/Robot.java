@@ -139,8 +139,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+        // TODO: Review: Rich added Math.toRadians, since Rotation2d wants radians and Navx.getAngle returns degrees    
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.get(), chassisY.get(),
-                chassisR.get(), new Rotation2d(-Navx.getAngle()));
+                chassisR.get(), new Rotation2d(Math.toRadians(-Navx.getAngle())));
         // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
         // chassisY.get(), chassisR.get());
         SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
