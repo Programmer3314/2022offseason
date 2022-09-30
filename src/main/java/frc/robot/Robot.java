@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -13,6 +14,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -28,147 +30,152 @@ import frc.robot.utility.MMJoystickAxis;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static MMJoystickAxis chassisX;
-  public static MMJoystickAxis chassisY;
-  public static MMJoystickAxis chassisR;
+    public static MMJoystickAxis chassisX;
+    public static MMJoystickAxis chassisY;
+    public static MMJoystickAxis chassisR;
 
-  public static ShuffleboardTab drivetrainTab;
+    public static AHRS Navx;
 
-  SwerveModule[] swerveModules;
-  Translation2d[] moduleOffset;
+    public static ShuffleboardTab drivetrainTab;
 
-  // TODO: update these values
-  public static long cycle = 0;
-  public static double now = 0;
+    SwerveModule[] swerveModules;
+    Translation2d[] moduleOffset;
 
-  // TODO: Add Navx (for field oriented driving)
+    // TODO: update these values
+    public static long cycle = 0;
+    public static double now = 0;
 
-  @Override
-  public void robotInit() {
-    drivetrainTab = Shuffleboard.getTab("Drivetrain");
+    @Override
+    public void robotInit() {
+        Navx = new AHRS(Port.kMXP);
 
-    moduleOffset = new Translation2d[] {
-        new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-            Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
-        new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-            -Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
-        new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-            -Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
-        new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-            Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0)
-    };
+        drivetrainTab = Shuffleboard.getTab("Drivetrain");
 
-    swerveModules = new SwerveModule[] {
-        // Mk4i is the module type
-        // createFalcon500 means that we have two Falcons on the module
-        // the drivetrainTab argument controls "automatically" displaying
-        // module info on shuffleboard
-        // GearRatio specifies which gearing option is installed - Ask Dom
-        // next 3 arguments are Can Bus addresses for the motors and cancoder
-        // last arg is the offset of the cancoder angle when the wheel is straight
-        // forward
-        Mk4iSwerveModuleHelper.createFalcon500(
-            drivetrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                .withSize(2, 4)
-                .withPosition(0, 0),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR,
-            Constants.FRONT_LEFT_MODULE_STEER_MOTOR,
-            Constants.FRONT_LEFT_MODULE_STEER_ENCODER,
-            Constants.FRONT_LEFT_MODULE_STEER_OFFSET),
+        moduleOffset = new Translation2d[] {
+                new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
+                        Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
+                new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
+                        -Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
+                new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
+                        -Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
+                new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
+                        Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0)
+        };
 
-        Mk4iSwerveModuleHelper.createFalcon500(
-            drivetrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                .withSize(2, 4)
-                .withPosition(3, 0),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
-            Constants.FRONT_RIGHT_MODULE_STEER_MOTOR,
-            Constants.FRONT_RIGHT_MODULE_STEER_ENCODER,
-            Constants.FRONT_RIGHT_MODULE_STEER_OFFSET),
+        swerveModules = new SwerveModule[] {
+                // Mk4i is the module type
+                // createFalcon500 means that we have two Falcons on the module
+                // the drivetrainTab argument controls "automatically" displaying
+                // module info on shuffleboard
+                // GearRatio specifies which gearing option is installed - Ask Dom
+                // next 3 arguments are Can Bus addresses for the motors and cancoder
+                // last arg is the offset of the cancoder angle when the wheel is straight
+                // forward
+                Mk4iSwerveModuleHelper.createFalcon500(
+                        drivetrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+                                .withSize(2, 4)
+                                .withPosition(0, 0),
+                        Mk4iSwerveModuleHelper.GearRatio.L2,
+                        Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR,
+                        Constants.FRONT_LEFT_MODULE_STEER_MOTOR,
+                        Constants.FRONT_LEFT_MODULE_STEER_ENCODER,
+                        Constants.FRONT_LEFT_MODULE_STEER_OFFSET),
 
-        Mk4iSwerveModuleHelper.createFalcon500(
-            drivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                .withSize(2, 4)
-                .withPosition(3, 5),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR,
-            Constants.BACK_RIGHT_MODULE_STEER_MOTOR,
-            Constants.BACK_RIGHT_MODULE_STEER_ENCODER,
-            Constants.BACK_RIGHT_MODULE_STEER_OFFSET),
+                Mk4iSwerveModuleHelper.createFalcon500(
+                        drivetrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+                                .withSize(2, 4)
+                                .withPosition(3, 0),
+                        Mk4iSwerveModuleHelper.GearRatio.L2,
+                        Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
+                        Constants.FRONT_RIGHT_MODULE_STEER_MOTOR,
+                        Constants.FRONT_RIGHT_MODULE_STEER_ENCODER,
+                        Constants.FRONT_RIGHT_MODULE_STEER_OFFSET),
 
-        Mk4iSwerveModuleHelper.createFalcon500(
-            drivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                .withSize(2, 4)
-                .withPosition(0, 5),
-            Mk4iSwerveModuleHelper.GearRatio.L2,
-            Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
-            Constants.BACK_LEFT_MODULE_STEER_MOTOR,
-            Constants.BACK_LEFT_MODULE_STEER_ENCODER,
-            Constants.BACK_LEFT_MODULE_STEER_OFFSET)
-    };
+                Mk4iSwerveModuleHelper.createFalcon500(
+                        drivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+                                .withSize(2, 4)
+                                .withPosition(3, 5),
+                        Mk4iSwerveModuleHelper.GearRatio.L2,
+                        Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR,
+                        Constants.BACK_RIGHT_MODULE_STEER_MOTOR,
+                        Constants.BACK_RIGHT_MODULE_STEER_ENCODER,
+                        Constants.BACK_RIGHT_MODULE_STEER_OFFSET),
 
-    chassisX = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1,
-        -Constants.MAX_VELOCITY_METERS_PER_SECOND);
-    chassisY = new MMJoystickAxis(Constants.DriverController, Constants.ChassisYAxis, .1,
-        -Constants.MAX_VELOCITY_METERS_PER_SECOND);
-    chassisR = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1,
-        -Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+                Mk4iSwerveModuleHelper.createFalcon500(
+                        drivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+                                .withSize(2, 4)
+                                .withPosition(0, 5),
+                        Mk4iSwerveModuleHelper.GearRatio.L2,
+                        Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
+                        Constants.BACK_LEFT_MODULE_STEER_MOTOR,
+                        Constants.BACK_LEFT_MODULE_STEER_ENCODER,
+                        Constants.BACK_LEFT_MODULE_STEER_OFFSET)
+        };
 
-  }
+        chassisX = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .1,
+                -Constants.MAX_VELOCITY_METERS_PER_SECOND);
+        chassisY = new MMJoystickAxis(Constants.DriverController, Constants.ChassisYAxis, .1,
+                -Constants.MAX_VELOCITY_METERS_PER_SECOND);
+        chassisR = new MMJoystickAxis(Constants.DriverController, Constants.ChassisRAxis, .1,
+                -Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 
-  @Override
-  public void robotPeriodic() {
-  }
-
-  @Override
-  public void autonomousInit() {
-  }
-
-  @Override
-  public void autonomousPeriodic() {
-  }
-
-  @Override
-  public void teleopInit() {
-  }
-
-  @Override
-  public void teleopPeriodic() {
-
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(), chassisY.get(), chassisR.get());
-    SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
-    SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,Constants.MAX_VELOCITY_METERS_PER_SECOND);
-    for (int i = 0; i < moduleOffset.length; i++) {
-      SwerveModuleState.optimize(swerveModuleState[i], new Rotation2d(swerveModules[i].getSteerAngle()));
-      // Comment the following line for calibration...
-      // swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond / Constants.MAX_VELOCITY_METERS_PER_SECOND)
-      //     * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
     }
-  }
 
-  @Override
-  public void disabledInit() {
-  }
+    @Override
+    public void robotPeriodic() {
+    }
 
-  @Override
-  public void disabledPeriodic() {
-  }
+    @Override
+    public void autonomousInit() {
+    }
 
-  @Override
-  public void testInit() {
-  }
+    @Override
+    public void autonomousPeriodic() {
+    }
 
-  @Override
-  public void testPeriodic() {
-  }
+    @Override
+    public void teleopInit() {
+    }
 
-  @Override
-  public void simulationInit() {
-  }
+    @Override
+    public void teleopPeriodic() {
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.get(), chassisY.get(),
+                chassisR.get(), new Rotation2d(-Navx.getAngle()));
+        // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
+        // chassisY.get(), chassisR.get());
+        SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
+        SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState, Constants.MAX_VELOCITY_METERS_PER_SECOND);
+        for (int i = 0; i < moduleOffset.length; i++) {
+            SwerveModuleState.optimize(swerveModuleState[i], new Rotation2d(swerveModules[i].getSteerAngle()));
+            // Comment the following line for calibration...
+            // swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
+            // Constants.MAX_VELOCITY_METERS_PER_SECOND)
+            // * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+        }
+    }
 
-  @Override
-  public void simulationPeriodic() {
-  }
+    @Override
+    public void disabledInit() {
+    }
+
+    @Override
+    public void disabledPeriodic() {
+    }
+
+    @Override
+    public void testInit() {
+    }
+
+    @Override
+    public void testPeriodic() {
+    }
+
+    @Override
+    public void simulationInit() {
+    }
+
+    @Override
+    public void simulationPeriodic() {
+    }
 }

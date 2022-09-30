@@ -14,38 +14,34 @@ public class Constants {
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = .0254*(CHASSIS_WIDTH_IN_INCHES-(WHEEL_OFFSET_IN_INCHES*2));
     public static final double DRIVETRAIN_WHEELBASE_METERS = .0254*(CHASSIS_LENGTH_IN_INCHES-(WHEEL_OFFSET_IN_INCHES*2));
 
-    // TODO: This is for Pigeon IMU we use the Navx
-    public static final int DRIVETRAIN_PIGEON_ID = 0;
 
-    // TODO: review constants and update for our values
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 4;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 2;
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 2;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 1;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 1;
     public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(0);
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 2;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 1;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 1;
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 4;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 3;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 2;
     public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0);
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 8;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 7;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 4;
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 3;
     public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(0);
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 6;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 3;
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 8;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 7;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 4;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0);
 
     public static final double MAX_VOLTAGE = 12.0;
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.14528; // With the L2... 4.96824
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
         Math.hypot(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0);
-
-    // TODO: make ChassisR consistant with ChassisX&Y    
+  
     public static final int ChassisXAxis = 1;
     public static final int ChassisYAxis = 0;
-    public static final int ChassisR =4;
+    public static final int ChassisRAxis =4;
     public static final int DriverController=0;
 }
