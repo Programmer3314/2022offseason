@@ -18,22 +18,22 @@ public class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 2;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 1;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 1;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(0);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(340.40);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 4;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 3;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 2;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(93.3);
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 3;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(0);
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 8;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 7;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 4;
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(228.16);
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 8;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 7;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 4;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(0);
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 6;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 5;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 3;
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(62.5);
 
     public static final double MAX_VOLTAGE = 12.0;
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.14528; // With the L2... 4.96824

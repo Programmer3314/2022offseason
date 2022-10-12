@@ -150,9 +150,13 @@ public class Robot extends TimedRobot {
         for (int i = 0; i < moduleOffset.length; i++) {
             SwerveModuleState.optimize(swerveModuleState[i], new Rotation2d(swerveModules[i].getSteerAngle()));
             // Comment the following line for calibration...
-            // swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
-            // Constants.MAX_VELOCITY_METERS_PER_SECOND)
-            // * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+            swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
+            Constants.MAX_VELOCITY_METERS_PER_SECOND)
+            * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+                //TODO fix values, too high.
+                /**
+                 * number got from diagnostic, one from calculation, find difference.
+                 */
         }
     }
 
