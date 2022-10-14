@@ -141,10 +141,10 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         // TODO: (3) Display the ChassisX, Y, and R values on shuffle board.
         // TODO: (1) Temporarily switch to non-field centric for initial testing
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.get(), chassisY.get(),
-                chassisR.get(), new Rotation2d(Math.toRadians(-Navx.getAngle())));
-        // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
-        // chassisY.get(), chassisR.get());
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(), chassisY.getSquared(),
+             chassisR.getSquared(), new Rotation2d(Math.toRadians(-Navx.getYaw())));
+         //ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
+         //chassisY.get(), chassisR.get());
         SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
         SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState, Constants.MAX_VELOCITY_METERS_PER_SECOND);
@@ -152,9 +152,9 @@ public class Robot extends TimedRobot {
             SwerveModuleState.optimize(swerveModuleState[i], new Rotation2d(swerveModules[i].getSteerAngle()));
         // TODO: (2) Please recalibrate and check offsets    
         // Comment the following line for calibration...
-        //     swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
-        //     Constants.MAX_VELOCITY_METERS_PER_SECOND)
-        //     * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+            swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
+            Constants.MAX_VELOCITY_METERS_PER_SECOND)
+            * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
                 // TODO: (4) fix values, too high. Review values displayed on shuffleboard 
                 /**
                  * Also display the result of the of the speed calculation above for each module
