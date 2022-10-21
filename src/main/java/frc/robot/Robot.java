@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
         public static MMJoystickAxis chassisY;
         public static MMJoystickAxis chassisR;
         
+        public static double target;
         public static double absoluteNavX;
 
         public static AHRS Navx;
@@ -146,17 +147,51 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
-                absoluteNavX = Navx.getAngle()%360;
+                absoluteNavX = -(((Navx.getAngle()+180)%360)-180);
+                if (absoluteNavX > 180 ){
+                        absoluteNavX = absoluteNavX- 360;
+
+                }
                 if (driverJoystick.getRawButton(1)) {
                         Navx.reset();
                 }
                 
                 // TODO: (3) Display the ChassisX, Y, and R values on shuffle board.
                 SmartDashboard.getEntry("NavX Angle").setDouble(absoluteNavX);
+                double rotation;
+                rotation = chassisR.getSquared();
+                double error;
+                error = absoluteNavX - target;
+
+                if (driverJoystick.getRawButton(3)){
+                        rotation = 0;
+                        if (error > 5){
+                                rotation = error/-60;
+                                if (rotation > -1){
+                                        rotation = -1;
+
+                                }
+                        }
+                        if (error < -5){
+                                rotation = error/-60;
+                                if (rotation < 1){
+                                        rotation = 1;
+                                }
+                        }
+                }
+                if (driverJoystick.getRawButton(2)){
+                       target+=.4;
+                }
+                //TODO: make method to adjust any angle from 360 to 180 based.
+
+                SmartDashboard.getEntry("Rotation").setDouble(rotation);
+
+
+
                 // TODO: (1) Temporarily switch to non-field centric for initial testing
                 ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
                                 chassisY.getSquared(),
-                                chassisR.getSquared(), new Rotation2d(Math.toRadians(-Navx.getYaw())));
+                                rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
                 // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
                 // chassisY.get(), chassisR.get());
                 SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
