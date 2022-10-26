@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utility.MMJoystickAxis;
+import frc.robot.utility.MMSwerveDriveKinematics;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,7 +46,7 @@ public class Robot extends TimedRobot {
 
         public static ShuffleboardTab drivetrainTab;
 
-        SwerveModule[] swerveModules;
+        public static SwerveModule[] swerveModules;
         Translation2d[] moduleOffset;
 
         // TODO: (later) update these values
@@ -144,14 +145,18 @@ public class Robot extends TimedRobot {
         @Override
         public void teleopInit() {
         }
+        public double minimalAngle(double angle) {
+                return (((((angle+180)%360)+360)%360)-180);
+        }
+
+
 
         @Override
         public void teleopPeriodic() {
-                absoluteNavX = -(((Navx.getAngle()+180)%360)-180);
-                if (absoluteNavX > 180 ){
-                        absoluteNavX = absoluteNavX- 360;
-
-                }
+                absoluteNavX = -minimalAngle(Navx.getAngle());
+                // if (absoluteNavX > 180 ){
+                //         absoluteNavX = absoluteNavX- 360;
+                // }
                 if (driverJoystick.getRawButton(1)) {
                         Navx.reset();
                 }
@@ -161,18 +166,19 @@ public class Robot extends TimedRobot {
                 double rotation;
                 rotation = chassisR.getSquared();
                 double error;
-                error = absoluteNavX - target;
+                error = minimalAngle(absoluteNavX - target);
 
                 if (driverJoystick.getRawButton(3)){
                         rotation = 0;
-                        if (error > 5){
+                        double Margin = 1.25;
+                        if (error > Margin){
                                 rotation = error/-60;
                                 if (rotation > -1){
                                         rotation = -1;
 
                                 }
                         }
-                        if (error < -5){
+                        if (error < -Margin){
                                 rotation = error/-60;
                                 if (rotation < 1){
                                         rotation = 1;
@@ -185,6 +191,8 @@ public class Robot extends TimedRobot {
                 //TODO: make method to adjust any angle from 360 to 180 based.
 
                 SmartDashboard.getEntry("Rotation").setDouble(rotation);
+                SmartDashboard.getEntry("Target").setDouble(target);
+                
 
 
 
@@ -194,7 +202,7 @@ public class Robot extends TimedRobot {
                                 rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
                 // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
                 // chassisY.get(), chassisR.get());
-                SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
+                MMSwerveDriveKinematics swerveDriveKinematics = new MMSwerveDriveKinematics(moduleOffset);
                 SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
                 SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
                                 Constants.MAX_VELOCITY_METERS_PER_SECOND);
