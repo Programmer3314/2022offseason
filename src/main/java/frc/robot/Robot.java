@@ -127,7 +127,6 @@ public class Robot extends TimedRobot {
                 chassisR = new MMJoystickAxis(Constants.DriverController, Constants.ChassisRAxis, .05,
                                 -Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND/2);
                 driverJoystick = new Joystick(Constants.DriverController);
-
         }
 
         @Override
@@ -145,6 +144,7 @@ public class Robot extends TimedRobot {
         @Override
         public void teleopInit() {
         }
+
         public double minimalAngle(double angle) {
                 return (((((angle+180)%360)+360)%360)-180);
         }
@@ -153,10 +153,10 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopPeriodic() {
+                // TODO: try this with the minus inside the ()
+                // conceptually it's the NavX that is backwards
+                // not the result. 
                 absoluteNavX = -minimalAngle(Navx.getAngle());
-                // if (absoluteNavX > 180 ){
-                //         absoluteNavX = absoluteNavX- 360;
-                // }
                 if (driverJoystick.getRawButton(1)) {
                         Navx.reset();
                 }
@@ -196,7 +196,6 @@ public class Robot extends TimedRobot {
 
 
 
-                // TODO: (1) Temporarily switch to non-field centric for initial testing
                 ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
                                 chassisY.getSquared(),
                                 rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
@@ -209,15 +208,10 @@ public class Robot extends TimedRobot {
                 for (int i = 0; i < moduleOffset.length; i++) {
                         SwerveModuleState.optimize(swerveModuleState[i],
                                         new Rotation2d(swerveModules[i].getSteerAngle()));
-                        // TODO: (2) Please recalibrate and check offsets
                         // Comment the following line for calibration...
                         swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
                                         Constants.MAX_VELOCITY_METERS_PER_SECOND)
                                         * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
-                        // TODO: (4) fix values, too high. Review values displayed on shuffleboard
-                        /**
-                         * Also display the result of the of the speed calculation above for each module
-                         */
                 }
         }
 
