@@ -193,14 +193,14 @@ public class Robot extends TimedRobot {
                 SmartDashboard.getEntry("Rotation").setDouble(rotation);
                 SmartDashboard.getEntry("Target").setDouble(target);
 
-                
-
                 ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
                                 chassisY.getSquared(),
                                 rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
                 // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
                 // chassisY.get(), chassisR.get());
-                MMSwerveDriveKinematics swerveDriveKinematics = new MMSwerveDriveKinematics(moduleOffset);
+                // MMSwerveDriveKinematics swerveDriveKinematics = new
+                // MMSwerveDriveKinematics(moduleOffset);
+                SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
                 SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
                 SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
                                 Constants.MAX_VELOCITY_METERS_PER_SECOND);
@@ -228,7 +228,7 @@ public class Robot extends TimedRobot {
         }
 
         @Override
-        public void testPeriodic() {//MINIMUM DRIVE=.51-MINIMUM TURN=
+        public void testPeriodic() {// MINIMUM DRIVE=.51-MINIMUM TURN=
                 SmartDashboard.getEntry("Voltage").setDouble(incrementPower);
 
                 if (driverJoystick.getRawButtonReleased(1)) {
@@ -247,7 +247,9 @@ public class Robot extends TimedRobot {
                                 0, new Rotation2d(Math.toRadians(-Navx.getYaw())));
                 // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
                 // chassisY.get(), chassisR.get());
-                MMSwerveDriveKinematics swerveDriveKinematics = new MMSwerveDriveKinematics(moduleOffset);
+                // MMSwerveDriveKinematics swerveDriveKinematics = new
+                // MMSwerveDriveKinematics(moduleOffset);
+                SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
                 SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
                 SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
                                 Constants.MAX_VELOCITY_METERS_PER_SECOND);
