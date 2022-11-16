@@ -13,6 +13,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.I2C.Port;
@@ -37,6 +41,10 @@ public class Robot extends TimedRobot {
         public static MMJoystickAxis chassisY;
         public static MMJoystickAxis chassisR;
 
+        public static NetworkTableInstance nt;
+        public static NetworkTable photonVision;
+        public static NetworkTableEntry cameraYaw;
+
         public static double target;
         public static double absoluteNavX;
 
@@ -60,6 +68,10 @@ public class Robot extends TimedRobot {
                 Navx = new AHRS(Port.kMXP);
 
                 drivetrainTab = Shuffleboard.getTab("Drivetrain");
+
+                nt= NetworkTableInstance.getDefault();
+                photonVision=nt.getTable("photonvision/mmal_service_16.1");
+                cameraYaw=photonVision.getEntry("targetYaw");
 
                 moduleOffset = new Translation2d[] {
                                 new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
@@ -163,31 +175,36 @@ public class Robot extends TimedRobot {
 
                 // TODO: (3) Display the ChassisX, Y, and R values on shuffle board.
                 SmartDashboard.getEntry("NavX Angle").setDouble(absoluteNavX);
+
+                double camY = cameraYaw.getDouble(0);
                 double rotation;
                 rotation = chassisR.getSquared();
                 double error;
-                error = minimalAngle(absoluteNavX - target);
-
+                // error = minimalAngle(absoluteNavX - target);
+                error = -camY;
+                double kp = .0325;
+                SmartDashboard.getEntry("Error").setDouble(error);
                 if (driverJoystick.getRawButton(3)) {
                         rotation = 0;
                         double Margin = 1.25;
-                        if (error > Margin) {
-                                rotation = error / -60;
-                                if (rotation > -1) {
-                                        rotation = -1;
+                        // if (error > Margin) {
+                        //         rotation = error * kp;
+                        //         if (rotation > -1) {
+                        //                 rotation = -1;
 
-                                }
-                        }
-                        if (error < -Margin) {
-                                rotation = error / -60;
-                                if (rotation < 1) {
-                                        rotation = 1;
-                                }
-                        }
+                        //         }
+                        // }
+                        // if (error < -Margin) {
+                        //         rotation = error * kp;
+                        //         if (rotation < 1) {
+                        //                 rotation = 1;
+                        //         }
+                        // }
+                        rotation=error*kp;
                 }
-                if (driverJoystick.getRawButton(2)) {
-                        target += .4;
-                }
+                // if (driverJoystick.getRawButton(2)) {
+                // target += .4;
+                // }
                 // TODO: make method to adjust any angle from 360 to 180 based.
 
                 SmartDashboard.getEntry("Rotation").setDouble(rotation);
