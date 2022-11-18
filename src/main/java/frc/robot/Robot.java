@@ -181,8 +181,8 @@ public class Robot extends TimedRobot {
                 rotation = chassisR.getSquared();
                 double error;
                 // error = minimalAngle(absoluteNavX - target);
-                error = -camY;
-                double kp = .0325;
+                error = camY;
+                double kp = -.13;//.0325
                 SmartDashboard.getEntry("Error").setDouble(error);
                 if (driverJoystick.getRawButton(3)) {
                         rotation = 0;
@@ -210,11 +210,11 @@ public class Robot extends TimedRobot {
                 SmartDashboard.getEntry("Rotation").setDouble(rotation);
                 SmartDashboard.getEntry("Target").setDouble(target);
 
-                ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
-                                chassisY.getSquared(),
-                                rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
-                // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
-                // chassisY.get(), chassisR.get());
+                //ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
+                                //chassisY.getSquared(),
+                                //rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
+                 ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
+                 chassisY.get(), chassisR.get());
                 // MMSwerveDriveKinematics swerveDriveKinematics = new
                 // MMSwerveDriveKinematics(moduleOffset);
                 SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
