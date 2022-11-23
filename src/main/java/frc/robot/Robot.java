@@ -45,6 +45,8 @@ public class Robot extends TimedRobot {
         public static NetworkTable photonVision;
         public static NetworkTableEntry cameraYaw;
 
+        public static NetworkTableEntry cameraPitch;
+
         public static double target;
         public static double absoluteNavX;
 
@@ -72,6 +74,7 @@ public class Robot extends TimedRobot {
                 nt= NetworkTableInstance.getDefault();
                 photonVision=nt.getTable("photonvision/mmal_service_16.1");
                 cameraYaw=photonVision.getEntry("targetYaw");
+                cameraPitch = photonVision.getEntry("targetPitch");
 
                 moduleOffset = new Translation2d[] {
                                 new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
@@ -157,6 +160,7 @@ public class Robot extends TimedRobot {
 
         @Override
         public void teleopInit() {
+                Navx.reset();
         }
 
         public double minimalAngle(double angle) {
@@ -177,12 +181,18 @@ public class Robot extends TimedRobot {
                 SmartDashboard.getEntry("NavX Angle").setDouble(absoluteNavX);
 
                 double camY = cameraYaw.getDouble(0);
+                double camPitch = cameraPitch.getDouble(0);
                 double rotation;
+                double robotY;
                 rotation = chassisR.getSquared();
+                robotY=chassisY.getSquared();
                 double error;
                 // error = minimalAngle(absoluteNavX - target);
                 error = camY;
-                double kp = -.13;//.0325
+                double kp = -.09;//.0325
+                double pitchKP=.1;
+                double desiredPitch=-9;
+                double  pitchError=camPitch-desiredPitch;
                 SmartDashboard.getEntry("Error").setDouble(error);
                 if (driverJoystick.getRawButton(3)) {
                         rotation = 0;
@@ -201,6 +211,8 @@ public class Robot extends TimedRobot {
                         //         }
                         // }
                         rotation=error*kp;
+                        robotY=pitchError*pitchKP;
+
                 }
                 // if (driverJoystick.getRawButton(2)) {
                 // target += .4;
@@ -209,12 +221,16 @@ public class Robot extends TimedRobot {
 
                 SmartDashboard.getEntry("Rotation").setDouble(rotation);
                 SmartDashboard.getEntry("Target").setDouble(target);
-
-                //ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
-                                //chassisY.getSquared(),
-                                //rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
-                 ChassisSpeeds chassisSpeeds = new ChassisSpeeds(chassisX.get(),
-                 chassisY.get(), chassisR.get());
+                ChassisSpeeds chassisSpeeds=null;
+                        if(!driverJoystick.getRawButton(3)){
+                chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
+                                robotY,
+                                rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
+                        }
+                        else{
+                 chassisSpeeds = new ChassisSpeeds(chassisX.get(),
+                 robotY, rotation);
+                        }
                 // MMSwerveDriveKinematics swerveDriveKinematics = new
                 // MMSwerveDriveKinematics(moduleOffset);
                 SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
