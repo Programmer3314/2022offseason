@@ -44,11 +44,14 @@ public class Robot extends TimedRobot {
         public static NetworkTableInstance nt;
         public static NetworkTable photonVision;
         public static NetworkTableEntry cameraYaw;
+        public static NetworkTableEntry cameraHasTarget;
 
         public static NetworkTableEntry cameraPitch;
 
         public static double target;
         public static double absoluteNavX;
+        public static boolean hasTarget;
+        public static boolean autoDrive;
 
         public static double incrementPower;
 
@@ -65,16 +68,19 @@ public class Robot extends TimedRobot {
         public static long cycle = 0;
         public static double now = 0;
 
+        public static double[] previousAngle = new double[4];
+
         @Override
         public void robotInit() {
                 Navx = new AHRS(Port.kMXP);
 
                 drivetrainTab = Shuffleboard.getTab("Drivetrain");
 
-                nt= NetworkTableInstance.getDefault();
-                photonVision=nt.getTable("photonvision/mmal_service_16.1");
-                cameraYaw=photonVision.getEntry("targetYaw");
+                nt = NetworkTableInstance.getDefault();
+                photonVision = nt.getTable("photonvision/mmal_service_16.1");
+                cameraYaw = photonVision.getEntry("targetYaw");
                 cameraPitch = photonVision.getEntry("targetPitch");
+                cameraHasTarget= photonVision.getEntry("hasTarget");
 
                 moduleOffset = new Translation2d[] {
                                 new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
@@ -179,39 +185,40 @@ public class Robot extends TimedRobot {
 
                 // TODO: (3) Display the ChassisX, Y, and R values on shuffle board.
                 SmartDashboard.getEntry("NavX Angle").setDouble(absoluteNavX);
-
+                hasTarget=cameraHasTarget.getBoolean(false);
+                autoDrive=hasTarget&&driverJoystick.getRawButton(3);
                 double camY = cameraYaw.getDouble(0);
                 double camPitch = cameraPitch.getDouble(0);
                 double rotation;
-                double robotY;
+                double robotX;
                 rotation = chassisR.getSquared();
-                robotY=chassisY.getSquared();
-                double error;
+                robotX = chassisX.getSquared();
+                double yawError;
                 // error = minimalAngle(absoluteNavX - target);
-                error = camY;
-                double kp = -.09;//.0325
-                double pitchKP=.1;
-                double desiredPitch=-9;
-                double  pitchError=camPitch-desiredPitch;
-                SmartDashboard.getEntry("Error").setDouble(error);
-                if (driverJoystick.getRawButton(3)) {
+                yawError = camY;
+                double yawKP = -.05;// .0325
+                double pitchKP = -.0625;
+                double desiredPitch = -9;
+                double pitchError = camPitch - desiredPitch;
+                SmartDashboard.getEntry("Error").setDouble(yawError);
+                if (autoDrive) {
                         rotation = 0;
                         double Margin = 1.25;
                         // if (error > Margin) {
-                        //         rotation = error * kp;
-                        //         if (rotation > -1) {
-                        //                 rotation = -1;
+                        // rotation = error * kp;
+                        // if (rotation > -1) {
+                        // rotation = -1;
 
-                        //         }
+                        // }
                         // }
                         // if (error < -Margin) {
-                        //         rotation = error * kp;
-                        //         if (rotation < 1) {
-                        //                 rotation = 1;
-                        //         }
+                        // rotation = error * kp;
+                        // if (rotation < 1) {
+                        // rotation = 1;
                         // }
-                        rotation=error*kp;
-                        robotY=pitchError*pitchKP;
+                        // }
+                        rotation = yawError * yawKP;
+                        robotX = pitchError * pitchKP;
 
                 }
                 // if (driverJoystick.getRawButton(2)) {
@@ -221,18 +228,17 @@ public class Robot extends TimedRobot {
 
                 SmartDashboard.getEntry("Rotation").setDouble(rotation);
                 SmartDashboard.getEntry("Target").setDouble(target);
-                ChassisSpeeds chassisSpeeds=null;
-                        if(!driverJoystick.getRawButton(3)){
-                chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisX.getSquared(),
-                                robotY,
-                                rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
-                        }
-                        else{
-                 chassisSpeeds = new ChassisSpeeds(chassisX.get(),
-                 robotY, rotation);
-                        }
-                // MMSwerveDriveKinematics swerveDriveKinematics = new
-                // MMSwerveDriveKinematics(moduleOffset);
+                ChassisSpeeds chassisSpeeds = null;
+                if (!autoDrive) {
+                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotX,
+                                        chassisY.getSquared(),
+                                        rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
+                } else {
+                        chassisSpeeds = new ChassisSpeeds(robotX,
+                                        0, rotation);
+                }
+                //MMSwerveDriveKinematics swerveDriveKinematics = new
+                //MMSwerveDriveKinematics(moduleOffset);
                 SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
                 SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
                 SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
@@ -241,9 +247,20 @@ public class Robot extends TimedRobot {
                         SwerveModuleState.optimize(swerveModuleState[i],
                                         new Rotation2d(swerveModules[i].getSteerAngle()));
                         // Comment the following line for calibration...
+                        if (Math.abs(robotX) >= 0.001 || Math.abs(chassisY.getSquared())>= 0.001 || Math.abs(rotation) >= 0.001){
+
+                        
                         swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
                                         Constants.MAX_VELOCITY_METERS_PER_SECOND)
                                         * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
+
+                        previousAngle[i]=swerveModuleState[i].angle.getRadians();
+                        }else{
+                                swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
+                                        Constants.MAX_VELOCITY_METERS_PER_SECOND)
+                                        * Constants.MAX_VOLTAGE, previousAngle[i]);
+                                
+                        }
                 }
                 SmartDashboard.getEntry("steerAAngle").setDouble(swerveModuleState[1].angle.getRadians());
         }
