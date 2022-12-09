@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
                                 // forward
                                 Mk4iSwerveModuleHelper.createFalcon500(
                                                 drivetrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 4)
+                                                                .withSize(2, 2)
                                                                 .withPosition(0, 0),
                                                 Mk4iSwerveModuleHelper.GearRatio.L2,
                                                 Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR,
@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
 
                                 Mk4iSwerveModuleHelper.createFalcon500(
                                                 drivetrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 4)
+                                                                .withSize(2, 2)
                                                                 .withPosition(3, 0),
                                                 Mk4iSwerveModuleHelper.GearRatio.L2,
                                                 Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
@@ -124,7 +124,7 @@ public class Robot extends TimedRobot {
 
                                 Mk4iSwerveModuleHelper.createFalcon500(
                                                 drivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 4)
+                                                                .withSize(2, 2)
                                                                 .withPosition(3, 5),
                                                 Mk4iSwerveModuleHelper.GearRatio.L2,
                                                 Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR,
@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
 
                                 Mk4iSwerveModuleHelper.createFalcon500(
                                                 drivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 4)
+                                                                .withSize(2, 2)
                                                                 .withPosition(0, 5),
                                                 Mk4iSwerveModuleHelper.GearRatio.L2,
                                                 Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
@@ -230,9 +230,10 @@ public class Robot extends TimedRobot {
                 SmartDashboard.getEntry("Target").setDouble(target);
                 ChassisSpeeds chassisSpeeds = null;
                 if (!autoDrive) {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotX,
-                                        chassisY.getSquared(),
-                                        rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
+                        //chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotX,
+                          //              chassisY.getSquared(),
+                            //            rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
+                            chassisSpeeds = new ChassisSpeeds(robotX, chassisY.getSquared(), rotation);
                 } else {
                         chassisSpeeds = new ChassisSpeeds(robotX,
                                         0, rotation);
@@ -244,8 +245,8 @@ public class Robot extends TimedRobot {
                 SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
                                 Constants.MAX_VELOCITY_METERS_PER_SECOND);
                 for (int i = 0; i < moduleOffset.length; i++) {
-                        SwerveModuleState.optimize(swerveModuleState[i],
-                                        new Rotation2d(swerveModules[i].getSteerAngle()));
+                        //SwerveModuleState.optimize(swerveModuleState[i],
+                          //              new Rotation2d(swerveModules[i].getSteerAngle()));
                         // Comment the following line for calibration...
                         if (Math.abs(robotX) >= 0.001 || Math.abs(chassisY.getSquared())>= 0.001 || Math.abs(rotation) >= 0.001){
 
