@@ -159,7 +159,8 @@ public class MMSwerveDriveKinematics {
       if (speed > 1e-6) {
         angle = new Rotation2d(x, y);
       } else {
-        angle = new Rotation2d(Robot.swerveModules[i].getSteerAngle());
+        // angle = new Rotation2d(Robot.swerveModules[i].getSteerAngle());
+        angle=new Rotation2d();
       }
 
       moduleStates[i] = new SwerveModuleState(speed, angle);

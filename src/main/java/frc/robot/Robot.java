@@ -41,6 +41,8 @@ public class Robot extends TimedRobot {
         public static MMJoystickAxis chassisY;
         public static MMJoystickAxis chassisR;
 
+        public static DriveTrain driveTrain;
+
         public static NetworkTableInstance nt;
         public static NetworkTable photonVision;
         public static NetworkTableEntry cameraYaw;
@@ -59,89 +61,19 @@ public class Robot extends TimedRobot {
 
         public static Joystick driverJoystick;
 
-        public static ShuffleboardTab drivetrainTab;
-
-        public static SwerveModule[] swerveModules;
-        Translation2d[] moduleOffset;
-
         // TODO: (later) update these values
         public static long cycle = 0;
         public static double now = 0;
-
-        public static double[] previousAngle = new double[4];
 
         @Override
         public void robotInit() {
                 Navx = new AHRS(Port.kMXP);
 
-                drivetrainTab = Shuffleboard.getTab("Drivetrain");
-
                 nt = NetworkTableInstance.getDefault();
                 photonVision = nt.getTable("photonvision/mmal_service_16.1");
                 cameraYaw = photonVision.getEntry("targetYaw");
                 cameraPitch = photonVision.getEntry("targetPitch");
-                cameraHasTarget= photonVision.getEntry("hasTarget");
-
-                moduleOffset = new Translation2d[] {
-                                new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-                                                Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
-                                new Translation2d(Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-                                                -Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
-                                new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-                                                -Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0),
-                                new Translation2d(-Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0,
-                                                Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0)
-                };
-
-                swerveModules = new SwerveModule[] {
-                                // Mk4i is the module type
-                                // createFalcon500 means that we have two Falcons on the module
-                                // the drivetrainTab argument controls "automatically" displaying
-                                // module info on shuffleboard
-                                // GearRatio specifies which gearing option is installed - Ask Dom
-                                // next 3 arguments are Can Bus addresses for the motors and cancoder
-                                // last arg is the offset of the cancoder angle when the wheel is straight
-                                // forward
-                                Mk4iSwerveModuleHelper.createFalcon500(
-                                                drivetrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 2)
-                                                                .withPosition(0, 0),
-                                                Mk4iSwerveModuleHelper.GearRatio.L2,
-                                                Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR,
-                                                Constants.FRONT_LEFT_MODULE_STEER_MOTOR,
-                                                Constants.FRONT_LEFT_MODULE_STEER_ENCODER,
-                                                Constants.FRONT_LEFT_MODULE_STEER_OFFSET),
-
-                                Mk4iSwerveModuleHelper.createFalcon500(
-                                                drivetrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 2)
-                                                                .withPosition(3, 0),
-                                                Mk4iSwerveModuleHelper.GearRatio.L2,
-                                                Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
-                                                Constants.FRONT_RIGHT_MODULE_STEER_MOTOR,
-                                                Constants.FRONT_RIGHT_MODULE_STEER_ENCODER,
-                                                Constants.FRONT_RIGHT_MODULE_STEER_OFFSET),
-
-                                Mk4iSwerveModuleHelper.createFalcon500(
-                                                drivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 2)
-                                                                .withPosition(3, 5),
-                                                Mk4iSwerveModuleHelper.GearRatio.L2,
-                                                Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR,
-                                                Constants.BACK_RIGHT_MODULE_STEER_MOTOR,
-                                                Constants.BACK_RIGHT_MODULE_STEER_ENCODER,
-                                                Constants.BACK_RIGHT_MODULE_STEER_OFFSET),
-
-                                Mk4iSwerveModuleHelper.createFalcon500(
-                                                drivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                                                                .withSize(2, 2)
-                                                                .withPosition(0, 5),
-                                                Mk4iSwerveModuleHelper.GearRatio.L2,
-                                                Constants.BACK_LEFT_MODULE_DRIVE_MOTOR,
-                                                Constants.BACK_LEFT_MODULE_STEER_MOTOR,
-                                                Constants.BACK_LEFT_MODULE_STEER_ENCODER,
-                                                Constants.BACK_LEFT_MODULE_STEER_OFFSET)
-                };
+                cameraHasTarget = photonVision.getEntry("hasTarget");
 
                 chassisX = new MMJoystickAxis(Constants.DriverController, Constants.ChassisXAxis, .05,
                                 -Constants.MAX_VELOCITY_METERS_PER_SECOND / 2);
@@ -150,6 +82,8 @@ public class Robot extends TimedRobot {
                 chassisR = new MMJoystickAxis(Constants.DriverController, Constants.ChassisRAxis, .05,
                                 -Constants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND / 2);
                 driverJoystick = new Joystick(Constants.DriverController);
+
+                driveTrain = new DriveTrain().init();
         }
 
         @Override
@@ -185,11 +119,13 @@ public class Robot extends TimedRobot {
 
                 // TODO: (3) Display the ChassisX, Y, and R values on shuffle board.
                 SmartDashboard.getEntry("NavX Angle").setDouble(absoluteNavX);
-                hasTarget=cameraHasTarget.getBoolean(false);
-                autoDrive=hasTarget&&driverJoystick.getRawButton(3);
+                hasTarget = cameraHasTarget.getBoolean(false);
+                autoDrive = hasTarget && driverJoystick.getRawButton(3);
                 double camY = cameraYaw.getDouble(0);
                 double camPitch = cameraPitch.getDouble(0);
                 double rotation;
+                double robotY;
+                robotY = chassisY.getSquared();
                 double robotX;
                 rotation = chassisR.getSquared();
                 robotX = chassisX.getSquared();
@@ -219,7 +155,7 @@ public class Robot extends TimedRobot {
                         // }
                         rotation = yawError * yawKP;
                         robotX = pitchError * pitchKP;
-
+                        robotY = 0;
                 }
                 // if (driverJoystick.getRawButton(2)) {
                 // target += .4;
@@ -228,42 +164,11 @@ public class Robot extends TimedRobot {
 
                 SmartDashboard.getEntry("Rotation").setDouble(rotation);
                 SmartDashboard.getEntry("Target").setDouble(target);
-                ChassisSpeeds chassisSpeeds = null;
-                if (!autoDrive) {
-                        //chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotX,
-                          //              chassisY.getSquared(),
-                            //            rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
-                            chassisSpeeds = new ChassisSpeeds(robotX, chassisY.getSquared(), rotation);
-                } else {
-                        chassisSpeeds = new ChassisSpeeds(robotX,
-                                        0, rotation);
-                }
-                //MMSwerveDriveKinematics swerveDriveKinematics = new
-                //MMSwerveDriveKinematics(moduleOffset);
-                SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
-                SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-                SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
-                                Constants.MAX_VELOCITY_METERS_PER_SECOND);
-                for (int i = 0; i < moduleOffset.length; i++) {
-                        //SwerveModuleState.optimize(swerveModuleState[i],
-                          //              new Rotation2d(swerveModules[i].getSteerAngle()));
-                        // Comment the following line for calibration...
-                        if (Math.abs(robotX) >= 0.001 || Math.abs(chassisY.getSquared())>= 0.001 || Math.abs(rotation) >= 0.001){
+                driveTrain.set(robotX, robotY, rotation, autoDrive);
+                driveTrain.update();
+                // MMSwerveDriveKinematics swerveDriveKinematics = new
+                // MMSwerveDriveKinematics(moduleOffset);
 
-                        
-                        swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
-                                        Constants.MAX_VELOCITY_METERS_PER_SECOND)
-                                        * Constants.MAX_VOLTAGE, swerveModuleState[i].angle.getRadians());
-
-                        previousAngle[i]=swerveModuleState[i].angle.getRadians();
-                        }else{
-                                swerveModules[i].set((swerveModuleState[i].speedMetersPerSecond /
-                                        Constants.MAX_VELOCITY_METERS_PER_SECOND)
-                                        * Constants.MAX_VOLTAGE, previousAngle[i]);
-                                
-                        }
-                }
-                SmartDashboard.getEntry("steerAAngle").setDouble(swerveModuleState[1].angle.getRadians());
         }
 
         @Override
@@ -300,17 +205,19 @@ public class Robot extends TimedRobot {
                 // chassisY.get(), chassisR.get());
                 // MMSwerveDriveKinematics swerveDriveKinematics = new
                 // MMSwerveDriveKinematics(moduleOffset);
-                SwerveDriveKinematics swerveDriveKinematics = new SwerveDriveKinematics(moduleOffset);
-                SwerveModuleState[] swerveModuleState = swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-                SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
-                                Constants.MAX_VELOCITY_METERS_PER_SECOND);
-                for (int i = 0; i < moduleOffset.length; i++) {
-                        SwerveModuleState.optimize(swerveModuleState[i],
-                                        new Rotation2d(swerveModules[i].getSteerAngle()));
-                        // TODO: (2) Please recalibrate and check offsets
-                        // Comment the following line for calibration...
-                        swerveModules[i].set(0.51, incrementPower);
-                }
+                // SwerveDriveKinematics swerveDriveKinematics = new
+                // SwerveDriveKinematics(moduleOffset);
+                // SwerveModuleState[] swerveModuleState =
+                // swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+                // SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleState,
+                // Constants.MAX_VELOCITY_METERS_PER_SECOND);
+                // for (int i = 0; i < moduleOffset.length; i++) {
+                // // SwerveModuleState.optimize(swerveModuleState[i],
+                // // new Rotation2d(swerveModules[i].getSteerAngle()));
+                // // TODO: (2) Please recalibrate and check offsets
+                // // Comment the following line for calibration...
+                // swerveModules[i].set(0.51, incrementPower);
+                // }
         }
 
         @Override
