@@ -7,6 +7,7 @@ package frc.robot;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -98,10 +99,10 @@ public class DriveTrain {
     public void update() {
         ChassisSpeeds chassisSpeeds = null;
         if (!autoDrive) {
-            // chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(robotX,
-            // chassisY.getSquared(),
-            // rotation, new Rotation2d(Math.toRadians(-Navx.getYaw())));
-            chassisSpeeds = new ChassisSpeeds(transX, transY, rotation);
+            chassisSpeeds =ChassisSpeeds.fromFieldRelativeSpeeds(transX,
+            transY,
+            rotation, new Rotation2d(Math.toRadians(-Robot.Navx.getYaw())));
+        //     chassisSpeeds = new ChassisSpeeds(transX, transY, rotation);
         } else {
             chassisSpeeds = new ChassisSpeeds(transX,
                     transY, rotation);

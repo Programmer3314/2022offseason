@@ -3,7 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
+//FOR OFFSETS, looking at the bottom of the robot, in order to rotate the wheels clockwise --> positive
 
 public class Constants {
     public static final double CHASSIS_LENGTH_IN_INCHES = 24.5;
@@ -18,7 +18,7 @@ public class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 2;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 1;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 1;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(173+180-5);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(173+180+37);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 4;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 3;
