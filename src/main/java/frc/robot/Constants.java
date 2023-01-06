@@ -44,4 +44,22 @@ public class Constants {
     public static final int ChassisYAxis = 0;
     public static final int ChassisRAxis =4;
     public static final int DriverController=4;
+
+    // public static final ModuleConfiguration MK4I_L2 = new ModuleConfiguration(
+//             0.10033, -wheel diameter(meters)
+//             (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0), -drive reduction
+//             true,-driveIsInverted
+//             (14.0 / 50.0) * (10.0 / 60.0),-steer Reduction
+//             false-steerIsInverted
+//     );
+
+    public static final int falconTicksPerRev=2048;
+    public static final double wheelDiameter=.10033;
+    public static final double driveReduction=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
+    public static final boolean driveIsInverted=true;
+    public static final double steerReduction=(14.0 / 50.0) * (10.0 / 60.0);
+    public static final boolean steerIsInverted=false;
+    public static final double wheelCircumference=(wheelDiameter/2)*Math.PI;
+    public static final double driveTicksToMeters=(1.0/falconTicksPerRev)*driveReduction*wheelCircumference;
+    public static final double turnTicksToRadians=(1.0/falconTicksPerRev)*steerReduction*2*Math.PI;
 }

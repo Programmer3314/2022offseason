@@ -93,7 +93,7 @@ public class Robot extends TimedRobot {
                 Navx.reset();
         }
 
-        public double minimalAngle(double angle) {
+        public static double minimalAngle(double angle) {
                 return (((((angle + 180) % 360) + 360) % 360) - 180);
         }
 
